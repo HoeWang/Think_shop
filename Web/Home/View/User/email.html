@@ -1,0 +1,194 @@
+<extend name="Home/index" />
+<!DOCTYPE html>
+<html>
+	<block name="head">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0,maximum-scale=1.0, user-scalable=0">
+
+		<title>验证邮箱</title>
+
+		<link href="__PUBLIC__/css/admin.css" rel="stylesheet" type="text/css">
+		<link href="__PUBLIC__/css/amazeui.css" rel="stylesheet" type="text/css">
+
+		<link href="__PUBLIC__/css/personal.css" rel="stylesheet" type="text/css">
+		<link href="__PUBLIC__/css/stepstyle.css" rel="stylesheet" type="text/css">
+		<link href="__PUBLIC__/Admin/assets/css/bootstrap.min.css" rel="stylesheet" />
+		<script type="text/javascript" src="__PUBLIC__/js/jquery-1.7.2.min.js"></script>
+		<script src="__PUBLIC__/js/amazeui.js"></script>
+
+	</head>
+	</block>
+
+
+	<block name="nav">
+	</block>
+	<block name="change">
+	</block>
+	<block name="search">
+	</block>
+
+
+	<body>
+		<!--头 -->
+		<header>
+			<article>
+				<div class="mt-logo">
+					<!--顶部导航条 -->
+					
+						<!--悬浮搜索框-->
+
+						
+			<b class="line"></b>
+		<div class="center">
+		<block name="main">
+			<div class="col-main">
+				<div class="main-wrap">
+
+					<div class="am-cf am-padding">
+						<div class="am-fl am-cf"><strong class="am-text-danger am-text-lg">绑定邮箱</strong> / <small>Email</small></div>
+					</div>
+					<hr/>
+					<!--进度条-->
+					<div class="m-progress">
+						<div class="m-progress-list">
+							<span class="step-1 step">
+                                <em class="u-progress-stage-bg"></em>
+                                <i class="u-stage-icon-inner">1<em class="bg"></em></i>
+                                <p class="stage-name">验证邮箱</p>
+                            </span>
+							<span class="step-2 step">
+                                <em class="u-progress-stage-bg"></em>
+                                <i class="u-stage-icon-inner">2<em class="bg"></em></i>
+                                <p class="stage-name">完成</p>
+                            </span>
+							<span class="u-progress-placeholder"></span>
+						</div>
+						<div class="u-progress-bar total-steps-2">
+							<div class="u-progress-bar-inner"></div>
+						</div>
+					</div>
+					<form class="am-form am-form-horizontal" method="post" action="{:U('Login/doAddEmail')}">
+						<div class="am-form-group" id="email1">
+							<label for="user-email" class="am-form-label">验证邮箱</label>
+							<div class="am-form-content">
+								<input type="email" id="user-email" placeholder="请输入邮箱地址" name="email">
+
+							</div>
+						</div>
+						<input type="hidden" name="id" value="{$id}">
+						<div class="am-form-group code">
+							<label for="user-code" class="am-form-label">验证码</label>
+							<div class="am-form-content">
+								<input type="tel" id="user-code" placeholder="验证码" name="codes" width="100">
+							</div>
+							
+								<button type="submit" id="mm" class="btn btn-danger" disabled style="position:relative;left:525px;top:-35px">验证码</button>
+							
+						</div>
+						<div class="info-btn">
+							<button type="submit" class="btn btn-danger">提交</button>
+						</div>
+
+					</form>
+
+				</div>
+
+				<script type="text/javascript">
+
+				//验证邮箱的合格性
+				$('#user-email').blur(function(){
+					
+					var val = $('#user-email').val();
+					console.log(val);
+					$.ajax({
+						url:"{:U('Login/addEmail')}",
+						data:"email=" + val,
+						async:true,
+						type:'post',
+						success:function(res){
+							if(res.status == 1){
+								var span = $('<span  style="color:green;">•'+ val + res.content +'</span>');
+								$('#mm').attr('disabled',false);	
+							}else{
+								var span = $('<span  style="color:red;">•'+ res.content +'</span>');
+								$('#mm').attr('disabled',true);
+							}
+							
+							$('#user-email + span').remove();
+							$('#user-email').after(span);
+						},
+						error:function(){
+							console.log('miss');
+						}
+
+					});
+
+				});
+
+				//发送邮件
+				$('#mm').click(function(){
+					var val = $('#user-email').val();
+					var i = 60;
+					$('#mm').attr('disabled',true);
+					var timer = setInterval(function(){
+						$('#mm').html(i + 's');
+						i--;
+						if(i == 0){
+							clearInterval(timer);
+							$('#mm').attr('disabled',false);
+							$('#mm').html("重新发送");
+						}
+					},1000);
+					
+					$.ajax({
+						url:"{:U('Login/doAddEmail')}",
+						type:"post",
+						data:"email=" + val,
+						success:function(res){
+							if(res == 0){
+								alert('发送失败，请重新发送');
+								clearInterval(timer);
+							$('#mm').attr('disabled',false);
+							$('#mm').html("重新发送");
+							}else{
+								console.log(res);
+							}
+						},
+					});
+				});
+				
+				</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+				
+				</block>
+			</div>
+
+			
+		</div>
+		
+	</body>
+	
+</html>
